@@ -110,7 +110,7 @@ import {computed} from "vue";
 import {useRouter} from "vue-router";
 const navigation = [
   { name: 'Dashboard',to: {name:"Dashboard"}, current: true },
-  { name: 'Surveys', to: {name:'Surverys'}, current: false },
+  { name: 'Surveys', to: {name:'Surveys'}, current: false },
 ]
 export default {
   components:{
@@ -120,10 +120,15 @@ export default {
     const store = useStore();
     const router = useRouter();
     function logout(){
-      store.commit("logout");
-      router.push({
-        name:"Login"
+      store.dispatch("logout").then((res)=>{
+        router.push({
+          name:"Login"
+        })
       })
+      // store.commit("logout");
+      // router.push({
+      //   name:"Login"
+      // })
     }
     return {
       user:computed(()=>store.state.user.data),
