@@ -1,13 +1,13 @@
 import {createStore} from "vuex";
 import axiosClient from "../axiosClient";
-import tmpSurveys from "../data/surveys"
+import surveys from "../data/surveys"
 const store = createStore({
   state:{
     user:{
       data:{},
       token:sessionStorage.getItem('TOKEN')
     },
-    surveys:[...tmpSurveys],
+    surveys:[...surveys],
     questionTypes: ["text", "select", "radio", "checkbox", "textarea"],
   },
   getters:{},
