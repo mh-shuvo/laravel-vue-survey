@@ -154,10 +154,11 @@ import PageComponent from "../components/PageComponent.vue";
 import QuestionEditor from "../components/editor/QuestionEditor.vue";
 import {ref} from "vue";
 import store from "../store";
-import  {useRoute} from "vue-router"
+import  {useRoute,useRouter} from "vue-router"
 import {v4 as uuidv4} from "uuid"
 
 const route = useRoute();
+const router = useRouter();
 let model = ref({
   title:"",
   status:false,
@@ -182,8 +183,13 @@ function onImageChoose(ev){
   }
   reader.readAsDataURL(file);
 }
-function questionChange(){
-
+function questionChange(question){
+  model.value.questions = model.value.questions.map((q)=>{
+    if(q.id === question.id){
+      return JSON.parse(JSON.stringify(question));
+    }
+    return q;
+  })
 }
 function addQuestion(index=0){
   const newQuestion = {
@@ -198,6 +204,14 @@ function addQuestion(index=0){
 }
 function deleteQuestion(question){
   model.value.questions = model.value.questions.filter((q) => q.id !== question.id)
+}
+function saveSurvey(){
+  store.dispatch('saveSurvey',model.value).then(({data}) =>{
+    router.push({
+      name:"SurveyView",
+      params:{id:data.data.id}
+    })
+  })
 }
 </script>
 

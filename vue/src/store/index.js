@@ -29,6 +29,24 @@ const store = createStore({
         commit('logout')
         return data
       })
+    },
+    saveSurvey({commit},survey){
+      let response;
+      delete survey.image_url
+      if(survey.id){
+        response = axiosClient.put(`/survey/${survey.id}`,survey)
+          .then((res)=>{
+              commit("updateSurvey",res.data)
+              return res;
+          });
+      }else{
+        response = axiosClient.post(`/survey/`,survey)
+          .then((res)=>{
+              commit("saveSurvey",res.data)
+              return res;
+          });
+      }
+      return response
     }
   },
   mutations:{
@@ -41,6 +59,17 @@ const store = createStore({
       state.user.token = userData.token;
       state.user.data = userData.user;
       sessionStorage.setItem('TOKEN',userData.token)
+    },
+    saveSurvey:(state,survey) => {
+      state.surveys = [...state.surveys,survey.data]
+    },
+    updateSurvey:(state,survey) => {
+      state.surveys = state.surveys.map((s)=>{
+        if(s.id == survey.data.id){
+          return survey.data;
+        }
+        return s;
+      })
     }
   },
   modules:{}
