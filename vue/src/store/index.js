@@ -65,6 +65,9 @@ const store = createStore({
           });
       }
       return response
+    },
+    deleteSurvey({commit},id){
+      return axiosClient.delete(`/survey/${id}`)
     }
   },
   mutations:{
