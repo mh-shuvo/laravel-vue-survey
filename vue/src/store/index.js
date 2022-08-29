@@ -7,11 +7,29 @@ const store = createStore({
       data:{},
       token:sessionStorage.getItem('TOKEN')
     },
+    currentSurvey:{
+      loading:false,
+      data:{}
+    },
     surveys:[...surveys],
     questionTypes: ["text", "select", "radio", "checkbox", "textarea"],
   },
   getters:{},
   actions:{
+    getSurvey({ commit }, id) {
+      commit("setCurrentSurveyLoading", true);
+      return axiosClient
+        .get(`/survey/${id}`)
+        .then((res) => {
+          commit("setCurrentSurvey", res.data);
+          commit("setCurrentSurveyLoading", false);
+          return res;
+        })
+        .catch((err) => {
+          commit("setCurrentSurveyLoading", false);
+          throw err;
+        });
+    },
     register({commit},user){
       return axiosClient.post('/register',user).then(({data})=>{
         commit('setUser',data)
@@ -70,7 +88,13 @@ const store = createStore({
         }
         return s;
       })
-    }
+    },
+    setCurrentSurveyLoading: (state, loading) => {
+      state.currentSurvey.loading = loading;
+    },
+    setCurrentSurvey: (state, survey) => {
+      state.currentSurvey.data = survey.data;
+    },
   },
   modules:{}
 })

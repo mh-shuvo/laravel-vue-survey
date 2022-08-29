@@ -15,7 +15,7 @@
                 Image
               </label>
               <div class="mt-1 flex items-center">
-                <img v-if="model.image" :src="model.image" class="w-64 h-48 object-cover">
+                <img v-if="model.image_url" :src="model.image_url" class="w-64 h-48 object-cover">
                 <span v-else class="flex items-center justify-center h-12 w-12 rounded-full overflow-hidden bg-gray-100">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -40,6 +40,7 @@
                   />
                   Change
                 </button>
+
               </div>
             </div>
             <!--/ Image -->
@@ -152,7 +153,7 @@
 <script setup>
 import PageComponent from "../components/PageComponent.vue";
 import QuestionEditor from "../components/editor/QuestionEditor.vue";
-import {ref} from "vue";
+import {ref, watch} from "vue";
 import store from "../store";
 import  {useRoute,useRouter} from "vue-router"
 import {v4 as uuidv4} from "uuid"
@@ -169,8 +170,20 @@ let model = ref({
   questions:[],
 });
 
-if(route.params.id){
-  model.value = store.state.surveys.find((s) => s.id === parseInt(route.params.id));
+// Watch to current survey data change and when this happens we update local model
+watch(
+  () => store.state.currentSurvey.data,
+  (newVal, oldVal) => {
+    model.value = {
+      ...JSON.parse(JSON.stringify(newVal)),
+      status: !!newVal.status,
+    };
+  }
+);
+// If the current component is rendered on survey update route we make a request to fetch survey
+if (route.params.id) {
+  store.dispatch("getSurvey", route.params.id);
+  console.log(store.state.currentSurvey.data)
 }
 
 function onImageChoose(ev){
@@ -200,7 +213,6 @@ function addQuestion(index=0){
     data:{}
   }
   model.value.questions.splice(index,0,newQuestion)
-
 }
 function deleteQuestion(question){
   model.value.questions = model.value.questions.filter((q) => q.id !== question.id)
