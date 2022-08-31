@@ -209,7 +209,6 @@ watch(
 // If the current component is rendered on survey update route we make a request to fetch survey
 if (route.params.id) {
   store.dispatch("getSurvey", route.params.id);
-  console.log(store.state.currentSurvey.data)
 }
 
 function onImageChoose(ev){
